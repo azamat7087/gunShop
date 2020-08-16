@@ -1,0 +1,24 @@
+{% extends 'shop/base_shop.html' %}
+
+{% block title %}
+    Main
+{% endblock %}
+
+{% block content %}
+    <div id="main">
+        <p> <h1> Welcome to my GunShop!</h1> </p>
+        <p><img src="../../static/images/shop_main.jpg" alt="sdas" id="main_picture"></p>
+        <p id="text"> This is my gun shop. You can find anything to hunt or protect your self. We have four categories for our
+        products. And of course all of this is sold legally.</p>
+        <p><h5>Our business partners</h5></p>
+
+        <div id="partners">
+            <a href="https://www.benelliusa.com/"> <div class="partner"> <p>Benelli </p> <img src="../../static/images/benelli_opt.png" alt="benelli" id="12"></div></a>
+            <a href="https://us.glock.com/en"> <div class="partner"> <p>Glock </p> <img src="../../static/images/glock.jpg" alt="glock">  </div> </a>
+            <a href="https://fnamerica.com/"> <div class="partner"> <p>FN </p> <img src="../../static/images/fn.jpg" alt="Fn">  </div> </a>
+            <a href="https://www.beretta.com/en/"> <div class="partner"> <p>Beretta</p>  <img src="../../static/images/beretta.png" alt="Beretta">  </div> </a>
+            <a href="https://hk-usa.com/"> <div class="partner"> <p>H&K</p>  <img src="../../static/images/hk.jpg" alt=""> </div> </a>
+        </div>
+
+    </div>
+{% endblock %}

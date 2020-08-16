@@ -1,0 +1,28 @@
+{% extends 'shop/base_shop.html' %}
+
+{% block title %}
+    Guns list
+{% endblock %}
+
+{% block content %}
+
+    {% for gun in gun_list %}
+
+            <div class="card mb-3 ml-100" style="max-width: 540px;">
+                <div class="row no-gutters">
+                    <div class="col-md-4">
+                        <img src="../../{{ gun.image }}" class="card-img mt-5" alt="..." >
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <a href={% url 'gun_detail_url' name=name slug=gun.slug  %} > <h5 class="card-title">{{ gun.name }}</h5> </a>
+                            <p class="card-text">{{ gun.body|truncatewords:15 }}</p>
+                            <p class="card-text"><small class="text-muted">{{ gun.date_pub}}</small></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    {% endfor %}
+    
+   
+{% endblock %}

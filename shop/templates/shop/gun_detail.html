@@ -1,0 +1,17 @@
+{% extends 'shop/base_shop.html' %}
+
+{% block title %}
+   {{ gun.name }}
+{% endblock %}
+
+{% block location %}
+{% endblock %}
+{% block content %}
+
+    <div id="gun_detail_id">
+        <h1 class="mb-5"> <em> {{ gun.name }} </em> </h1>
+        <p><img src="../../../{{ gun.image }}" alt="dfd" width="520px"></p>
+
+        <p id="text_detail_id"> {{ gun.body }}</p>
+    </div>
+{% endblock %}
