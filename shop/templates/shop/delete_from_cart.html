@@ -1,0 +1,19 @@
+{% extends 'shop/base_shop.html' %}
+
+{% block title %}
+  Gun Delete
+{% endblock %}
+
+{% block content %}
+
+    <div id="delete_gun_cart">
+        <form action="{% url 'gun_delete_url' login=login gun=gun.gun_slug %}" method="post">
+            {% csrf_token %}
+            <h3>Do you want to delete {{ gun.name|title }} from cart ?</h3>
+          <p><img src="../../../../../../{{ gun.image }}" alt="dsds" ></p>
+            <a class="btn btn-primary" href="{% url 'user_cart_url' login=login  %}">Cancel</a>
+            <button class="btn btn-danger" type="submit">Delete</button>
+        </form>
+    </div>
+
+{% endblock %}

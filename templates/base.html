@@ -18,7 +18,7 @@
 <body>
    <header id="logo">
        <h1> Gun shop </h1>
-       <img src="../../../static/images/ak47_small2.png" alt="" id="ak_47_2">
+       <img src="../../../../../../static/images/ak47_small2.png" alt="" id="ak_47_2">
 
        <div id="info">
             <h4>Info</h4>
@@ -31,7 +31,7 @@
    <div id="navbar">
         <nav>
             <a href="{% url 'main' %}">Main</a>
-            <a href="">Buy</a>
+            <a href={% if request.user.is_authenticated %}"{% url 'user_cart_url' login=request.user %}"{% else %}{% endif %}>Buy</a>
             <a href={% if request.user.is_authenticated %}"{% url 'user_detail_url' login=request.user %}"{% else %}{% endif %}> Account</a>
             <a href="">News</a>
         </nav>
@@ -60,7 +60,7 @@
 {% block location %}
     <div id="location">
         <h5>You can find us:</h5>
-        <img src="../../static/images/location.jpg" alt="sda" width="300">
+        <img src="../../../../../../static/images/location.jpg" alt="sda" width="300">
         <p><em>Address: Kazakhstan, Almaty, st.Pushkin, h.Kolotushin </em></p>
     </div>
 {% endblock %}

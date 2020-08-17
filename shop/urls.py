@@ -7,5 +7,10 @@ urlpatterns = [
     path('users/<str:login>/', UserDetail.as_view(), name='user_detail_url'),
     path('<str:name>/', gun_list, name='gun_list_url'),
     path('<str:name>/<str:slug>/', GunDetail.as_view(), name='gun_detail_url'),
+    path('<str:name>/<str:slug>/buy/', GunBuy.as_view(), name='gun_buy_url'),
+    path('users/<str:login>/cart/<str:gun>/', GunInCart.as_view(), name='gun_cart_url'),
+    path('users/<str:login>/basket/', UserCart.as_view(), name='user_cart_url'),
+    path('users/<str:login>/basket/<str:gun>/delete/', GunDelete.as_view(), name='gun_delete_url'),
+
 
 ]

@@ -12,14 +12,13 @@
         <img id="list_blocknote" src="../../../static/images/list-is-bloknota.jpg" alt="dsada" width="500px">
         <div id="user_info_small">
           <p>Information:</p>
-            <p> Name: {{ user.name }}</p>
-            <p> Sex: {{ user.sex }}</p>
-            <p> Date of Birth: {{ user.date_of_birth }}</p>
-            <p> About me: <block-quote> {{ user.body }}</block-quote></p>
+            <div id="Small_info">
+                <p> Name: {{ user.name }}</p>
+                <p> Sex: {{ user.sex }}</p>
+                <p> Date of Birth: {{ user.date_of_birth }}</p>
+                <p> About me: <block-quote> {{ user.body }}</block-quote></p>
+                <p> Cash: {{ user.cash }} $</p>
+            </div>
         </div>
     </div>
-{% endblock %}
-
-{% block location %}
-
 {% endblock %}

@@ -385,3 +385,104 @@ footer {
     top:  0px;
     z-index: -4;
 }
+
+#buy_gun {
+
+    right: -400px;
+    top: 40px;
+    text-align: center;
+    border: black thin dashed;
+    background-color: #65697a;
+    border-radius: 7px;
+    position: absolute;
+    color: black;
+
+}
+
+#add_cart {
+    margin-left: 20px;
+    border: black 2px solid;
+    background-color: white;
+    padding: 50px;
+    padding-top: 5px;
+    padding-bottom: 10px;
+    width: 500px;
+}
+#add_cart h1{
+    font-family: "Times New Roman";
+}
+#gun_name {
+    font-style: italic;
+    font-size: 20px;
+    border: dotted black thin;
+    border-radius: 8px;
+    text-align: center;
+    background-color: lightsteelblue;
+}
+
+#buttons {
+    text-align: center;
+}
+#buttons a {
+    margin-right: 20px;
+    padding: 50px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    text-align: center;
+}
+
+#Small_info p{
+    margin-top: 20px;
+    margin-left: 20px;
+}
+
+#minus {
+    width:    40px;
+    position: absolute;
+    left:     330px;
+    top:      16px;
+    padding: 0px;
+
+}
+
+#delete_gun_cart{
+
+    text-align: center;
+    padding: 30px;
+    font-family: "Times New Roman";
+    width: 500px;
+    border: black dotted 3px;
+    background-color: slategray;
+}
+
+#delete_gun_cart img{
+    border-radius: 9px;
+    width: 200px;
+    margin-bottom: 20px;
+}
+
+#wallet {
+    border: black solid 4px;
+    border-radius: 7px;
+    position: absolute;
+    right: -320px;
+    top: 20px;
+    padding: 40px;
+    background-color: lightslategray;
+}
+
+#wallet_img {
+    margin-top: 10px;
+    margin-left: -20px;
+    width: 70px;
+
+}
+#cash{
+    position: absolute;
+    right: 20px;
+    top:   120px;
+    font-family: "Agency FB";
+
+    font-size: 50px;
+
+}

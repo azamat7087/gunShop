@@ -30,7 +30,22 @@ class InfoOfUser(models.Model):
     sex = models.CharField(max_length=10, db_index=True)
     image = models.ImageField(upload_to='static/images/users/', blank=True)
     body = models.TextField(max_length=200,db_index=True,default="")
+    cash = models.DecimalField(max_digits=10, decimal_places=2,default=1000)
     date_of_birth = models.DateTimeField()
+
+    def __str__(self):
+        return self.name
+
+class Cart(models.Model):
+    name = models.CharField(max_length=150, db_index=True)
+    user = models.CharField(max_length=150, db_index=True)
+    gun_slug = models.SlugField(max_length=30, blank=True, unique=True)
+    date_of_add = models.DateTimeField(auto_now=True)
+    image = models.ImageField(upload_to='static/images/guns/', blank=True)
+
+
+    class Meta:
+        ordering = ['-date_of_add']
 
     def __str__(self):
         return self.name

@@ -11,7 +11,6 @@ admin.site.register(Guns, GunsAdmin)
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug',]
-
     prepopulated_fields = {'slug': ('name',)}
 
 admin.site.register(Category, CategoryAdmin)
@@ -21,3 +20,9 @@ class InfoOfUserAdmin(admin.ModelAdmin):
     list_filter = ['body', 'image', 'date_of_birth']
 
 admin.site.register(InfoOfUser, InfoOfUserAdmin)
+
+class CartAdmin(admin.ModelAdmin):
+    list_display = ['name', 'user', 'gun_slug', 'date_of_add']
+    list_filter = ['name', 'user', 'gun_slug', 'date_of_add']
+
+admin.site.register(Cart, CartAdmin)

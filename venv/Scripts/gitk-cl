@@ -1,0 +1,685 @@
+#!/usr/bin/env tclsh
+set gitkpath [exec which gitk]
+if {![file exists $gitkpath]} {
+    catch {
+	set gitkpath [exec cygpath --windows $gitkpath]
+    }
+}
+source $gitkpath
+
+set lastms [clock clicks -milliseconds]
+proc log {text {end \n}} {
+    global lastms
+    global debugtext
+
+    set curms [clock clicks -milliseconds]
+    set diff [expr { $curms - $lastms }]
+    if {$end != ""} {
+	set end " ($diff ms) $end"
+    }
+    append debugtext $text $end
+    update
+
+    set lastms $curms
+}
+
+# addtocflist: Replace gitk's original
+rename addtocflist orig_addtocflist
+proc addtocflist {ids} {
+    create_ui
+    orig_addtocflist $ids
+    update
+    make_diagram
+}
+
+proc make_diagram {} {
+    global latest_imgpath latest_dirs
+    global showdiagram
+
+    if {!$showdiagram} {
+	return
+    }
+    nowbusy gitk-cl
+    set dirs [put_src_files]
+    set dir1 [lindex $dirs 0]
+    set dir2 [lindex $dirs 1]
+    set dir3 [lindex $dirs 2]
+    set imgpath $dir3/classes
+    set rangespath $dir3/ranges
+    set latest_dirs $dirs
+    set latest_imgpath $imgpath
+
+    global async_callback_queue
+    set async_callback_queue {}
+    lappend async_callback_queue [concat "generate_ctags" $dir1]
+    lappend async_callback_queue [concat "generate_ctags" $dir2]
+    lappend async_callback_queue [concat "generate_gv" $dir1 $dir2 $imgpath $rangespath]
+    lappend async_callback_queue [concat "generate_img" $dir1 $dir2 $imgpath]
+    lappend async_callback_queue [concat "load_img" $imgpath]
+
+    generate_diff_ranges $rangespath
+}
+
+# clear_ctext: Replace gitk's original
+rename clear_ctext orig_clear_ctext
+proc clear_ctext {{first 1.0}} {
+    orig_clear_ctext $first
+    clear_previous_image
+    clear_canvas
+    clear_debugtext
+    reset_zoomlevel
+}
+
+proc create_ui {} {
+    global NS ctxbut
+    global brightdiagram zoomlevel
+    global showflist showdiagram
+
+    if {[info exists brightdiagram]} {
+	return
+    }
+
+    set brightdiagram [${NS}::frame .bright.diagram]
+    set canvas .bright.diagram.canvas
+    canvas $canvas
+    pack $canvas -anchor nw
+    pack forget .bright.cfiles
+    if {$showdiagram} {
+	pack .bright.diagram -side right -fill both -expand 1
+    }
+    if {$showflist} {
+	pack .bright.cfiles -side left -fill both -expand 1
+    }
+
+    set diagram_menu .diagramctxmenu
+    makemenu $diagram_menu {
+	{mc "Open PNG" command {open_png}}
+	{mc "Copy path: old code directory" command {copy_path_dir 0}}
+	{mc "Copy path: new code directory" command {copy_path_dir 1}}
+	{mc "Copy path: output directory" command {copy_path_dir 2}}
+	{mc "Show debug info" command {show_debug_info}}
+    }
+    $diagram_menu configure -tearoff 0
+
+    bind .bright.diagram $ctxbut {pop_diagram_menu %W %X %Y %x %y}
+    bind .bright.diagram.canvas $ctxbut {pop_diagram_menu %W %X %Y %x %y}
+    bind .bright.diagram.canvas <ButtonPress-1> {%W scan mark   %x %y
+	set dragged 0
+	set xdrag [expr {![scaled_img_fully_visible_x]}]
+	set ydrag [expr {![scaled_img_fully_visible_y]}]
+    }
+    bind .bright.diagram.canvas <ButtonRelease-1> {
+	if {$dragged <= 10} {
+	    mouse_left %x %y
+	}
+    }
+    bind .bright.diagram.canvas <B1-Motion>     {
+	%W scan dragto [expr %x * $xdrag] [expr %y * $ydrag] 1
+	incr dragged
+    }
+    bind .bright.diagram.canvas <Button-4> {zoom $orig_image $scaled_image -1 %x %y}
+    bind .bright.diagram.canvas <Button-5> {zoom $orig_image $scaled_image 1 %x %y}
+    bind .bright.diagram.canvas <MouseWheel> {zoom $orig_image $scaled_image %D %x %y}
+
+    ${NS}::checkbutton .bright.mode.checkflist -text [mc "Files"] \
+	-command mod_ui -variable showflist
+    ${NS}::checkbutton .bright.mode.checkdiagram -text [mc "Diagram"] \
+	-command mod_ui -variable showdiagram
+    grid forget .bright.mode.patch .bright.mode.tree
+    grid .bright.mode.patch .bright.mode.tree .bright.mode.checkflist .bright.mode.checkdiagram - -sticky ew -padx 4
+}
+
+proc register_config {var default_val} {
+    global config_variables
+    global $var
+    if {![info exists $var]} {
+	set $var $default_val
+    }
+    lappend config_variables $var
+    config_init_trace $var
+    trace add variable $var write config_variable_change_cb
+}
+
+register_config showdiagram 1
+register_config showflist 1
+proc mod_ui {} {
+    global showflist showdiagram
+
+    pack forget .bright.cfiles
+    pack forget .bright.diagram
+    if {$showdiagram} {
+	pack .bright.diagram -side right -fill both -expand 1
+    }
+    if {$showflist} {
+	pack .bright.cfiles -side left -fill both -expand 1
+    }
+    make_diagram
+}
+
+proc mouse_left {x y} {
+    global imap zoomlevel
+
+    set unzoomedx [expr {[.bright.diagram.canvas canvasx $x] * $zoomlevel}]
+    set unzoomedy [expr {[.bright.diagram.canvas canvasy $y] * $zoomlevel}]
+
+    set evalables_sorted {}
+    dict for {id val} $imap {
+	dict with val {
+	    if {$unzoomedx >= $left && $unzoomedx <= $right &&
+		$unzoomedy >= $top && $unzoomedy <= $bottom} {
+		if {[string match *scroll_to_file* $evalable]} {
+		    # do scroll before search
+		    set evalables_sorted [linsert $evalables_sorted 0 $evalable]
+		} else {
+		    lappend evalables_sorted $evalable
+		}
+	    }
+	}
+    }
+    foreach evalable $evalables_sorted {
+	{*}$evalable
+    }
+}
+
+proc pop_diagram_menu {w X Y x y} {
+    tk_popup .diagramctxmenu $X $Y
+}
+
+proc clear_previous_image {} {
+    global imap
+
+    if {[info exists imap]} {
+	diagram_img blank
+	scaled_img blank
+    }
+}
+
+proc clear_canvas {} {
+    global imap
+
+    if {[info exists imap]} {
+	.bright.diagram.canvas delete all
+    }
+}
+
+proc clear_debugtext {} {
+    global debugtext
+
+    set debugtext ""
+}
+
+proc reset_zoomlevel {} {
+    global zoomlevel
+
+    set zoomlevel 1
+}
+
+proc put_src_files {} {
+    global nullid nullid2
+    global flist_menu_file diffids
+    global parentlist selectedline
+
+    # See gitk's external_diff
+    if {[llength $diffids] == 1} {
+	set diffidto [lindex $diffids 0]
+	if {$diffidto eq $nullid} {
+	    set diffidfrom $nullid2
+	} elseif {$diffidto eq $nullid2} {
+	    set diffidfrom "HEAD"
+	} else {
+	    set diffidfrom [lindex $parentlist $selectedline 0]
+	}
+    } else {
+	set diffidfrom [lindex $diffids 0]
+	set diffidto [lindex $diffids 1]
+    }
+
+    set difffromdir [gitknewtmpdir]
+    set difftodir [gitknewtmpdir]
+    set imgdir [gitknewtmpdir]
+
+    put_files $diffidfrom $difffromdir
+    put_files $diffidto $difftodir
+
+    return [list $difffromdir $difftodir $imgdir]
+}
+
+proc put_files {diffid dir} {
+    global worktree treediffs diffids
+    global nullid nullid2
+
+    if {$diffid eq {}} {
+	return
+    }
+    if {$diffid eq $nullid} {
+	# Copy from the working directory
+	foreach filename $treediffs($diffids) {
+	    set destfile [file join $dir $filename]
+	    set sourcefile $worktree/$filename
+	    if {[file exists $sourcefile]} {
+		if {![file exists [file dirname $destfile]]} {
+		    file mkdir [file dirname $destfile]
+		}
+		file copy -- $sourcefile $destfile
+	    }
+	}
+	return
+    }
+    set files_esc [shell_escape $treediffs($diffids)]
+    if {$diffid eq $nullid2} {
+	# Copy from the index
+	set cmd "git -C $worktree checkout-index -q --prefix=$dir/ -- $files_esc"
+	exec_sync $cmd
+	return
+    }
+
+    # Ignore files that don't exist in this version, otherwise git archive will fail
+    set cmd "git -C $worktree ls-tree --name-only --full-tree -zr $diffid -- $files_esc"
+    set files [exec_sync $cmd] 
+    set files [string trimright $files \0]
+    if {$files ne {}} {
+	# Copy from commit
+	set files_esc [shell_escape [split $files "\0"]]
+	set cmd "git -C $worktree archive $diffid $files_esc | tar xC $dir"
+	exec_sync $cmd
+    }
+}
+
+proc shell_escape {lst} {
+    set escaped {}
+    foreach s $lst {
+	if {[string first ' $s] != -1} {
+	    # Ignore files with single quotes since our escaping can't handle them
+	    continue
+	}
+	append escaped "'$s' "
+    }
+    return $escaped
+}
+
+proc generate_diff_ranges {outputpath} {
+    global ignorespace
+    global limitdiffs vfilelimit curview
+    global diffids
+
+    set diffcmd [diffcmd $diffids "-p --submodule --no-commit-id -U0 --no-prefix"]
+    if {$ignorespace} {
+	append diffcmd " -w"
+    }
+    if {$limitdiffs && $vfilelimit($curview) ne {}} {
+	set diffcmd [concat $diffcmd -- $vfilelimit($curview)]
+    }
+
+    set diffcmd [string trimleft $diffcmd "| "]
+    set cmd [list | sh -c "$diffcmd | grep '^+++\\|^@@' | tee $outputpath"]
+    exec_async $cmd
+}
+
+proc generate_ctags {srcdir} {
+    # Use sh -c to prevent tab conversion
+    set cmd [list | sh -c "ctags --sort=no --extras=+r -Rxf $srcdir/tags --tag-relative=always --_xformat='%{input}	%{roles}	%{kind}	%{name}	%{typeref}	%{scope}	%{access}	%{implementation}	%{inherits}	%{language}	%{line}	%{end}' $srcdir"]
+    exec_async $cmd
+}
+
+proc generate_gv {tags1 tags2 imgpath rangespath} {
+    set cmd [list | classdiff $tags1 $tags2 -o $imgpath.gv -r $rangespath]
+    foreach arg [get_config_args] {
+	lappend cmd -e
+	lappend cmd $arg
+    }
+    exec_async $cmd
+}
+
+proc generate_img {tags1 tags2 imgpath} {
+    set cmd [list | fdp -Tpng -o $imgpath.png -Timap_np -o $imgpath.imap_np $imgpath.gv]
+    exec_async $cmd
+}
+
+proc load_img {imgpath} {
+    global imap scaled_image orig_image showflist
+
+    set orig_image [image create photo diagram_img -file "$imgpath.png"]
+    set scaled_image [image create photo scaled_img]
+    scaled_img copy $orig_image
+    set factor 0.85
+    if {!$showflist} {
+	set factor 1.0
+    }
+    set max_width [expr {
+	round(([winfo width .bright.diagram]
+	    + [winfo width .bright.cfiles]) * $factor)
+    }]
+    set max_height [winfo height .bright.diagram]
+    set img_width [image width $scaled_image]
+    set img_height [image height $scaled_image]
+    set canvas_width [expr min($img_width, $max_width)]
+    set canvas_height [expr min($img_height, $max_height)]
+    .bright.diagram.canvas create image 0 0 -image $scaled_image -anchor nw
+    .bright.diagram.canvas configure -width $canvas_width -height $canvas_height
+    .bright.diagram.canvas configure -scrollregion [.bright.diagram.canvas bbox all]
+    .bright.diagram.canvas xview moveto 0
+    .bright.diagram.canvas yview moveto 0
+
+    set imap [dict create]
+    set file [open "$imgpath.imap_np"]
+    while {[gets $file line] > -1} {
+	if {[regexp "^rect (?:filename:(.*):)?gitk:(.*) (\\d+),(\\d+) (\\d+),(\\d+)$" $line match fname evalable left top right bottom]} {
+	    set key $match
+	    if {$fname ne {}} {
+		set key $fname
+		dict set imap $key fname $fname
+	    }
+	    dict set imap $key left $left
+	    dict set imap $key top $top
+	    dict set imap $key right $right
+	    dict set imap $key bottom $bottom
+	    dict set imap $key evalable $evalable
+	}
+    }
+    close $file
+    notbusy gitk-cl
+}
+
+proc exec_sync {cmd} {
+    log "$cmd..." ""
+    if {[catch {
+	set val [exec sh -c $cmd]
+    } err]} {
+	log "error\n $err"
+	return -code error $err
+    }
+    log "done"
+    return $val
+}
+
+proc exec_async {cmd} {
+    global latest_fd
+
+    log "$cmd..." ""
+    set latest_fd [open $cmd r]
+    fconfigure $latest_fd -blocking 0
+    filerun $latest_fd [list poll_async $latest_fd]
+}
+
+proc poll_async {fd} {
+    global latest_fd
+    global async_callback_queue
+
+    while {[gets $fd line] >= 0} { 
+	# Ignore stdout. Diff ranges are printed there, but we get them with tee.
+    }
+    if {[eof $fd]} {
+	fconfigure $fd -blocking 1
+	if {[catch {close $fd} err options]} {
+	    set status 0
+	    if {[lindex [dict get $options -errorcode] 0] eq "CHILDSTATUS"} {
+		set status [lindex [dict get $options -errorcode] 2]
+		append err " (exit code $status)"
+	    } 
+	    notbusy gitk-cl
+	    log "error\n $err"
+	    error_popup $err
+	    if {$status != 0} {
+		return 0
+	    }
+	} else {
+	    log "done"
+	}
+	if {$latest_fd eq $fd} {
+	    set callback [queue_next async_callback_queue]
+	    if {$callback ne {}} {
+		{*}$callback
+	    }
+	}
+	return 0
+    }
+    return 1
+}
+
+proc queue_next {name} {
+    # https://wiki.tcl-lang.org/page/Stacks+and+queues
+    upvar 1 $name queue
+    set res [lindex $queue 0]
+    set queue [lreplace $queue [set queue 0] 0]
+    set res
+}
+
+proc open_png {} {
+    global latest_imgpath
+
+    launch_file_viewer [file normalize $latest_imgpath.png]
+}
+
+proc copy_path_dir {index} {
+    global latest_dirs
+
+    clipboard clear
+    clipboard append [file normalize [lindex $latest_dirs $index]]
+}
+
+proc launch_file_viewer {path} {
+    # https://wiki.tcl-lang.org/page/Invoking+browsers
+    if {[catch {
+	set programs {xdg-open open start firefox}
+	foreach program $programs {
+	    if {$program eq "start"} {
+		set cmd [list {*}[auto_execok start] {}]
+	    } else {
+		set cmd [auto_execok $program]
+	    }
+	    if {[string length $cmd]} {
+		break
+	    }
+	}
+	exec {*}$cmd $path &
+    } err]} {
+	error_popup $err
+    }
+}
+
+proc show_debug_info {} {
+    global debugtext
+
+    if {[confirm_popup "$debugtext\n\nCopy to clipboard?"]} {
+	clipboard clear
+	clipboard append $debugtext
+    }
+}
+
+proc get_config_args {} {
+    global clconfig
+    set r {}
+    foreach arg [split $clconfig "\n"] {
+	lappend r $arg
+    }
+    return $r
+}
+
+proc search_next {search_term} {
+    # Called by evalable
+    global searchstring
+    global latest_scroll_file
+
+    if {$searchstring eq $search_term} {
+	dosearch
+    } else {
+	scroll_to_file $latest_scroll_file 1
+	reset_search_markers
+	set searchstring $search_term
+    }
+}
+
+proc scroll_to_file {name {force 0}} {
+    # Called by evalable
+    global ctext_file_names difffilestart ctext
+    global latest_scroll_file
+
+    if {[info exists latest_scroll_file] && $latest_scroll_file eq $name && !$force} {
+	# Scrolling to the same position twice is usually unnecessary
+	# It's better to allow a search to scroll to other places
+	return
+    }
+
+    set i [lsearch -exact $ctext_file_names $name]
+    if {$i >= 0} {
+	set loc [lindex $difffilestart $i]
+	$ctext yview $loc
+    }
+    set latest_scroll_file $name
+}
+
+proc reset_search_markers {} {
+    global ctext
+
+    # Resetting the search markers will start the next search from the
+    # scroll position rather than from previous search results
+    $ctext tag remove sel 1.0 end
+    $ctext mark unset anchor
+}
+
+# highlightfile: Replace gitk's original
+rename highlightfile orig_highlightfile
+proc highlightfile {cline} {
+    orig_highlightfile $cline
+    draw_file_rectangle 1
+}
+
+# sel_flist: Replace gitk's original
+rename sel_flist orig_sel_flist
+proc sel_flist {w x y} {
+    orig_sel_flist $w $x $y
+    draw_file_rectangle 1
+}
+
+proc draw_file_rectangle {focus} {
+    global ctext_file_names cflist_top imap
+    global zoomlevel
+
+    if {![info exists imap] || ![info exists cflist_top]} {
+	return
+    }
+
+    .bright.diagram.canvas delete rect
+    set i [expr {$cflist_top - 2}]
+    if {$i >= 0} {
+	set f [lindex $ctext_file_names $i]
+	if {[dict exists $imap $f]} {
+	    set left [expr {[dict get $imap $f left] / $zoomlevel}]
+	    set top [expr {[dict get $imap $f top] / $zoomlevel}]
+	    set right [expr {[dict get $imap $f right] / $zoomlevel}]
+	    set bottom [expr {[dict get $imap $f bottom] / $zoomlevel}]
+	    set rect [ \
+		.bright.diagram.canvas create rectangle $left $top \
+		$right $bottom -outline blue -width 3
+	    ]
+	    .bright.diagram.canvas addtag rect withtag $rect
+	    if {$focus} {
+		canvas_focus_items .bright.diagram.canvas $rect
+	    }
+	}
+    }
+}
+
+proc canvas_focus_items {c items} {
+    # https://wiki.tcl-lang.org/page/canvas
+    set box [eval $c bbox $items]
+
+    if {$box == ""} { return }
+
+    foreach { x y x1 y1  } $box break
+    foreach { top  btm   } [$c yview] break
+    foreach { left right } [$c xview] break
+    foreach { p q xmax ymax } [$c cget -scrollregion] break
+
+    set xpos [expr (($x1+$x) / 2.0) / $xmax - ($right-$left) / 2.0]
+    set ypos [expr (($y1+$y) / 2.0) / $ymax - ($btm-$top)    / 2.0]
+
+    if {[scaled_img_fully_visible_x]} {
+	set xpos 0
+    }
+    if {[scaled_img_fully_visible_y]} {
+	set ypos 0
+    }
+    $c xview moveto $xpos
+    $c yview moveto $ypos
+}
+
+proc scaled_img_fully_visible_x {} {
+    global scaled_image
+
+    set img_width [image width $scaled_image]
+    set max_width [winfo width .bright.diagram]
+    return [expr {$img_width < $max_width}]
+}
+
+proc scaled_img_fully_visible_y {} {
+    global scaled_image
+
+    set img_height [image height $scaled_image]
+    set max_height [winfo height .bright.diagram]
+    return [expr {$img_height < $max_height}]
+}
+
+proc zoom {srcimg destimg direction x y} {
+    global zoomlevel
+
+    set unzoomedx [expr {[.bright.diagram.canvas canvasx $x] * $zoomlevel}]
+    set unzoomedy [expr {[.bright.diagram.canvas canvasy $y] * $zoomlevel}]
+
+    if {$direction < 0} {
+	incr zoomlevel -1
+	if {$zoomlevel < 1} {
+	    set zoomlevel 1
+	}
+    } else {
+	if {![scaled_img_fully_visible_x] || ![scaled_img_fully_visible_y]} {
+	    incr zoomlevel
+	}
+    }
+
+    $destimg blank
+    $destimg copy $srcimg -shrink -subsample $zoomlevel
+
+    set img_width [image width $destimg]
+    set img_height [image height $destimg]
+    .bright.diagram.canvas configure -scrollregion [list 0 0 $img_width $img_height]
+    foreach { p q xmax ymax } [.bright.diagram.canvas cget -scrollregion] break
+    set zoomedx [expr {($unzoomedx / $zoomlevel - $x) / $xmax}]
+    set zoomedy [expr {($unzoomedy / $zoomlevel - $y) / $ymax}]
+    if {$zoomedx < 0} {
+	set zoomedx 0
+    }
+    if {$zoomedy < 0} {
+	set zoomedy 0
+    }
+    .bright.diagram.canvas xview moveto $zoomedx
+    .bright.diagram.canvas yview moveto $zoomedy
+    draw_file_rectangle 0
+}
+
+register_config clconfig "# Copy and change settings from config.py\n# Example:\n#Config.cluster_packages = False"
+# prefspage_general : Replace gitk's original
+rename prefspage_general orig_prefspage_general
+proc prefspage_general {notebook} {
+    global NS bgcolor fgcolor
+    global clconfig
+
+    set page [orig_prefspage_general $notebook]
+    text $page.gitkclt -background $bgcolor -foreground $fgcolor \
+	-font textfont
+    $page.gitkclt insert end $clconfig
+    bind $page.gitkclt <KeyRelease> "copy_config_text_to_var $page"
+    ${NS}::frame $page.gitkclf
+    ${NS}::label $page.gitkcll -text [mc "Class diagram"]
+    grid $page.gitkcll - -sticky nw -pady 10
+    grid x $page.gitkclf $page.gitkclt -sticky ew
+
+    return $page
+}
+
+proc copy_config_text_to_var {page} {
+    global clconfig
+    set clconfig [$page.gitkclt get 1.0 {end -1c}]
+}
+
+# vim: ft=tcl ts=8 sts=4 sw=4

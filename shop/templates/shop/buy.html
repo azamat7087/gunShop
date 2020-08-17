@@ -1,0 +1,17 @@
+{% extends 'shop/base_shop.html' %}
+{% block title %}
+    Buy
+{% endblock %}
+
+
+{% block content %}
+    <div id="add_cart">
+        <h1>Are you sure you want to add this product to your cart?</h1>
+           <p id="gun_name"> {{ name|title }} - {{ gun.name }} </p>
+          <p> <img src="../../../../{{ gun.image }}" alt="gfgfgfgf" width="300px"> </p>
+        <div id="buttons">
+            <a href="{% url 'gun_cart_url' gun=gun login=request.user  %} " class="btn btn-dark" > Yes</a>
+            <a href="{% url 'main' %}" class="btn btn-danger" >No</a>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,17 @@
+Metadata-Version: 2.1
+Name: gitk-class-diagram
+Version: 1.0.0
+Summary: Class diagrams based on commit diffs
+Home-page: https://github.com/stefandtw/gitk-class-diagram
+License: GPLv3+
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Tcl
+Classifier: Topic :: Software Development
+Classifier: Topic :: Software Development :: Version Control :: Git
+Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)
+Requires-Python: >=3.7
+
+UNKNOWN
+
+

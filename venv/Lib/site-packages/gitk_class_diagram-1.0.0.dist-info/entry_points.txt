@@ -1,0 +1,3 @@
+[console_scripts]
+classdiff = classdiff.main:main
+

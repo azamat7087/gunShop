@@ -8,13 +8,15 @@
 {% endblock %}
 {% block content %}
 
-    <div id="gun_detail_id">
-        <h1 class="mb-5"> <em> {{ gun.name }} </em> </h1>
-        <p><img src="../../../{{ gun.image }}" alt="dfd" width="520px"></p>
-
-        <p id="text_detail_id"> {{ gun.body }}</p>
-    </div>
-
-
-
+{% include 'includes/gun_card_template.html' %}
+    {% if request.user.is_authenticated %}
+        {% if already %}
+            <a href="{% url 'gun_buy_url' name=name slug=gun.slug %}">
+                <div id="buy_gun">
+                    <img src="../../../static/images/buy.png" alt="dsds" width="150px">
+                    <h4> Add to cart</h4>
+                </div>
+            </a>
+        {% endif %}
+    {% endif %}
 {% endblock %}
