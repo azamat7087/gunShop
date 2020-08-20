@@ -7,8 +7,11 @@
 {% endblock %}
 
 {% block content %}
+    {% if not guns %}
+        <h1>Sorry, you don't have anything in your basket :(</h1>
+    {% endif %}
     {% for gun in guns %}
-        <div class="card text-black bg-secondary mb-3" style="max-width: 400px;">
+        <div class="card text-black bg-secondary mb-3" style="max-width: 600px;">
             <div class="row no-gutters">
                 <div class="col-md-4">
                     <img src="../../../../{{ gun.image }}" class="card-img m-1" alt="...">
@@ -16,11 +19,18 @@
                 <div class="col-md-8">
                     <div class="card-body">
 
-                    <p class="card-text">{{ gun.name}}</p>
+                    <p id="gun_name_cart" class="card-text">{{ gun.name}}</p>
                     <p class="card-text"><small class="">{{ gun.date_of_add }}</small></p>
                     </div>
                 </div>
                <a href="{% url 'gun_delete_url' login=request.user gun=gun.gun_slug %}"> <img id="minus"src="../../../../static/images/minus.png" alt="sdsd"></a>
+                    <div id="cart_price">
+                        {% for gun1 in gun_all %}
+                            {% if gun1.slug == gun.gun_slug %}
+                                    {{ gun1.price }}$
+                            {% endif %}
+                        {% endfor %}
+                    </div>
             </div>
         </div>
 
@@ -31,4 +41,11 @@
             <p id="cash">{{ cash }} $</p>
         </div>
     {% endfor %}
+
+        <div id="total">
+            <h4>Total:</h4>
+            {{ total }}$
+           <p id="total_button"> <a href="{% url 'user_buy_url' login=request.user total=total %}" class="btn btn-success">Buy</a> </p>
+        </div>
+
 {% endblock %}

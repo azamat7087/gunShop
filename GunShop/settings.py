@@ -41,7 +41,8 @@ INSTALLED_APPS = [
     'shop',
     'allauth',
     'allauth.account',
-    'allauth.socialaccount'
+    'allauth.socialaccount',
+    'django_summernote',
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 AUTHENTICATION_BACKENDS = (
@@ -126,6 +127,7 @@ USE_L10N = True
 
 USE_TZ = True
 
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
@@ -141,3 +143,24 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = "/"
+
+SUMMERNOTE_CONFIG = {
+    'iframe': True,
+    'summernote': {
+        # As an example, using Summernote Air-mode
+        'airMode': False,
+        'width': '90%',
+        'height': '300',
+        'toolbar': [
+            ['style', ['bold', 'italic', 'underline', 'clear']],
+             ['font', ['strikethrough', 'superscript', 'subscript']],
+             ['fontsize', ['fontsize']],
+             ['color', ['color']],
+             ['para', ['ul', 'ol', 'paragraph']],
+             ['height', ['height']],
+        ]
+
+
+    },
+    'disable_attachment': True,
+}

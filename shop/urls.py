@@ -11,6 +11,10 @@ urlpatterns = [
     path('users/<str:login>/cart/<str:gun>/', GunInCart.as_view(), name='gun_cart_url'),
     path('users/<str:login>/basket/', UserCart.as_view(), name='user_cart_url'),
     path('users/<str:login>/basket/<str:gun>/delete/', GunDelete.as_view(), name='gun_delete_url'),
+    path('users/<str:login>/basket/buy/<str:total>', UserBuy.as_view(), name='user_buy_url'),
+    path('users/<str:login>/purchase/', PurchaseUser.as_view(), name='purchase_user_url'),
+    path('users/<str:login>/create/', CreateInfo.as_view(), name='create_info_url'),
+    path('users/<str:login>/update/', UpdateInfo.as_view(), name='update_info_url'),
 
 
 ]

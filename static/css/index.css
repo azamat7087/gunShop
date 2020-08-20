@@ -3,22 +3,49 @@ body {
     /*background-image: url("../images/background.jpg");*/
     /*background-repeat: no-repeat;*/
     background-color: dimgrey !important;
+     background: linear-gradient(to top left,   black,dimgrey);
 }
 
+
 #logo h1 {
+
     margin-top: 0;
     margin-bottom: 0;
     border: solid black 1px;
     padding: 25px;
     font-size: 50px;
-    background-color: lightslategrey;
+    /*background-color: lightslategrey;*/
+
     padding-left: 110px;
     font-style: italic;
     background-image: url("../images/ak47_small.png");
     background-repeat: no-repeat;
     background-position: left;
+
+    color: black;
+    text-shadow:    0 1px 0 #ccc,
+                    0 2px 0 #c9c9c9,
+                    0 3px 0 #bbb,
+                    0 4px 0 #b9b9b9,
+                    0 5px 0 #aaa,
+                    0 6px 1px rgba(0,0,0,.1),
+                    0 0 5px rgba(0,0,0,.1),
+                    0 1px 3px rgba(0,0,0,.3),
+                    0 3px 5px rgba(0,0,0,.2),
+                    0 5px 10px rgba(0,0,0,.25),
+                    0 10px 10px rgba(0,0,0,.2),
+                    0 20px 20px rgba(0,0,0,.15);
+
+
+
+}
+
+#logo {
+    background: #b5bdc8;
+    background: linear-gradient(to top left,   black,lightblue);
 }
 #info{
+    color: white;
     position: absolute;
     right: 250px;
     top: 20px;
@@ -191,6 +218,7 @@ footer {
     width: 380px;
 
 
+
 }
 
 #location img {
@@ -199,6 +227,7 @@ footer {
     margin-bottom: 20px;
     margin-left: 15px;
     margin-top: 20px;
+    box-shadow: 0.4em 0.4em 5px black;
 }
 
 #location h5{
@@ -353,6 +382,8 @@ footer {
     width: 300px;
     border: black 3px solid;
     margin-bottom: 10px;
+
+    max-height: 200px;
 }
 
 #user_info_small  {
@@ -439,7 +470,7 @@ footer {
 #minus {
     width:    40px;
     position: absolute;
-    left:     330px;
+    left:     420px;
     top:      16px;
     padding: 0px;
 
@@ -466,9 +497,10 @@ footer {
     border-radius: 7px;
     position: absolute;
     right: -320px;
-    top: 20px;
+    top: 0px;
     padding: 40px;
     background-color: lightslategray;
+    width: 300px;
 }
 
 #wallet_img {
@@ -485,4 +517,166 @@ footer {
 
     font-size: 50px;
 
+}
+
+#price {
+    position: absolute;
+    border: black solid 2px;
+    border-radius: 6px;
+    right: -400px;
+    top: 250px;
+    width: 153px;
+    background-color: rgba(104,155,168,0.33);
+}
+
+#price_img {
+    float: right ;
+    width: 60px;
+}
+
+#price h4{
+    padding-left: 2px;
+    padding-top: 3px;
+    font-family: "Arial";
+}
+
+#price p{
+    padding-left: 10px;
+    font-family: Impact;
+}
+
+#cart_price {
+    color: rgba(22,190,47,0.92);
+    position: absolute;
+    font-weight: bold;
+    right: 20px;
+    bottom: 10px;
+}
+
+#gun_name_cart{
+    font-weight: bold;
+}
+
+#total {
+    position: fixed;
+    right: 160px;
+    bottom: 20px;
+    border: dashed black 4px;
+    border-radius: 6px;
+    width: 120px;
+    text-align: center;
+    background-color: #6e7a6a;
+}
+
+#total h4 {
+    font-weight: bold;
+}
+
+
+#total_button {
+    margin-top: 10px;
+}
+
+#final_buy {
+    background-image: url("../images/buy_back.jpg");
+    border: black solid 3px;
+    padding: 30px;
+
+}
+
+#final_buy h1 {
+    -webkit-text-stroke-width: 1px;
+    -webkit-text-stroke-color: white;
+    padding: 10px;
+    font-weight: bold;
+    border-radius: 9px;
+    border: black 2px solid;
+    background-color: grey;
+
+
+}
+
+#check {
+    border: black solid 3px;
+    border-radius: 8px;
+    padding: 30px;
+    position: absolute;
+    right: -300px;
+    top: 20px;
+    background-color: white;
+}
+
+#check p {
+    padding-left: 20px;
+    font-family: Impact;
+}
+
+#buy_button {
+    position: absolute;
+    right: -290px;
+    top:   400px;
+
+}
+#buy_button button {
+     width: 180px;
+}
+
+#purchase {
+    /*border: black solid 4px;*/
+    background-color: #48657a;
+    border: 30px solid #40c4c8;
+    border-image: url("../images/cam_border.jpg")  30 round round;
+    padding: 10px;
+    width: 500px;
+    margin-bottom: 20px;
+
+}
+
+#purchase h1 {
+    font-style: italic;
+    border: black dashed 3px;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: lightslategray;
+}
+#purchase_history{
+    position: absolute;
+    width: 200px;
+    right:-400px;
+    bottom: 10px;
+    text-align: center;
+    border: dashed black 4px;
+    border-radius: 7px;
+    background-color: cornflowerblue;
+    padding: 20px;
+    padding-top: 10px;
+}
+#purchase_history img{
+
+    width: 100px;
+}
+
+#purchase_history h4{
+    font-style: oblique;
+    font-weight: bolder;
+}
+
+#purchase_history a:link{
+    color: black;
+}
+
+#purchase_history a:hover{
+    color: green;
+}
+
+#purchase_history a:visited{
+    color: black;
+}
+
+
+#edit_info img {
+    width: 50px;
+    position: absolute;
+    right: -20px;
+    bottom: 330px;
 }

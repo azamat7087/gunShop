@@ -16,9 +16,24 @@
                 <p> Name: {{ user.name }}</p>
                 <p> Sex: {{ user.sex }}</p>
                 <p> Date of Birth: {{ user.date_of_birth }}</p>
-                <p> About me: <block-quote> {{ user.body }}</block-quote></p>
+                <p> About me: <block-quote> {{ user.body|safe }}</block-quote></p>
                 <p> Cash: {{ user.cash }} $</p>
             </div>
         </div>
+
+        <div id="edit_info">
+            <a href="{% url 'update_info_url' login=request.user %}">
+                 <img src="../../../static/images/shestrenya.png" alt="">
+            </a>
+        </div>
     </div>
+
+
+        <div id="purchase_history">
+            <a href="{% url 'purchase_user_url' login=request.user%}">
+                <h4>Purchase history</h4>
+                <img id="purchase_img" src="../../../static/images/purchase_history.png" alt="sds">
+            </a>
+        </div>
+
 {% endblock %}
