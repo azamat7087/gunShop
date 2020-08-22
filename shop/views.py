@@ -245,3 +245,10 @@ class UpdateInfo(View):
             new_obj = bound_form.save()
             return redirect('user_detail_url', login=login)
         return render(request, 'shop/update_info.html', context={'form': bound_form})
+
+class News(View):
+    def get(self, request):
+        news = Purchase.objects.all()
+        users = InfoOfUser.objects.all()
+
+        return render(request, 'shop/news.html', context={'news': news, 'users': users})

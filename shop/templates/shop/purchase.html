@@ -9,7 +9,7 @@
     <h1>Thank you for your purchase</h1>
 
         {% for gun in page_object.object_list %}
-
+            <div id="card_purchase" >
                 <div class="col mb-4">
                     <div class="card">
                     <img src="../../../../../{{ gun.image }}" class="card-img-top" alt="...">
@@ -17,9 +17,10 @@
                         <h5 class="card-title">{{ gun.gun_slug}}</h5>
                         <p class="card-text">{{ gun.date_of_add }}</p>
                     </div>
-                </div>
-            </div>
+                    </div>
+                 </div>
 
+            </div>
         {% endfor %}
     </div>
 

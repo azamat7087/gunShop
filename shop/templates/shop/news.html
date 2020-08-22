@@ -1,0 +1,42 @@
+{% extends 'shop/base_shop.html' %}
+
+{% block title %}
+    News
+{% endblock %}
+
+{% block content %}
+
+    {% for action in news %}
+        {% for user in users %}
+
+        {% if action.login == user.login %}
+            <div id="action">
+                <p id="user_login_news">{{ user.name }}</p>
+                <p><img id="user_img_news" src="../../../{{ user.image }}" alt=""></p>
+                <p><h5>Bought!</h5></p>
+                <div id = "gun_card_image">
+
+                <div class="card mb-3 " style="max-width: 300px; max-height: 120px">
+                <div class="row no-gutters">
+                <div class="col-md-4">
+                <img src="../../../{{ action.image }}" class="card-img" alt="...">
+                </div>
+                <div class="col-md-8">
+                <div class="card-body">
+                <h4 class="card-title">{{ action.gun_slug|title }}</h4>
+                <p class="card-text"><small class="text-muted">{{ action.date_of_add}}</small></p>
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>
+            </div>
+
+        {% endif %}
+
+        {% endfor %}
+    {% endfor %}
+
+
+
+{% endblock %}

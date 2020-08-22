@@ -623,7 +623,7 @@ footer {
 
 #purchase {
     /*border: black solid 4px;*/
-    background-color: #48657a;
+    background-color: rgba(113,128,121,0.92);
     border: 30px solid #40c4c8;
     border-image: url("../images/cam_border.jpg")  30 round round;
     padding: 10px;
@@ -637,7 +637,7 @@ footer {
     border: black dashed 3px;
     border-radius: 5px;
     padding: 10px;
-    background-color: lightslategray;
+    background-color: gray;
 }
 #purchase_history{
     position: absolute;
@@ -679,4 +679,42 @@ footer {
     position: absolute;
     right: -20px;
     bottom: 330px;
+}
+
+#action {
+    border: black dotted 3px;
+    margin-bottom: 10px;
+    background-color: rgba(197,189,114,0.92);
+    padding-bottom: 0px;
+    height: 220px;
+    width: 560px;
+}
+
+#user_img_news {
+    width: 100px;
+    margin-left: 10px;
+    border: black solid thin;
+}
+
+#user_login_news {
+    margin-left: 10px;
+    margin-top: 2px;
+    margin-bottom: 4px;
+    font-family: Georgia;
+    font-weight: bold;
+    max-height: 78px;
+}
+
+#action h5 {
+    position: relative;
+    left: 200px;
+    top: -100px;
+}
+
+#gun_card_image {
+    position: relative;
+    left: 200px;
+    top: -100px;
+
+
 }
