@@ -33,7 +33,7 @@
             <a href="{% url 'main' %}">Main</a>
             <a href={% if request.user.is_authenticated %}"{% url 'user_cart_url' login=request.user %}"{% else %}{% endif %}>Buy</a>
             <a href={% if request.user.is_authenticated %}"{% url 'user_detail_url' login=request.user %}"{% else %}{% endif %}> Account</a>
-            <a href="">News</a>
+            <a href="{% url 'news' %}">News</a>
         </nav>
    </div>
 

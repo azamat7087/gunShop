@@ -34,6 +34,7 @@ class InfoOfUser(models.Model):
     cash = models.DecimalField(max_digits=10, decimal_places=2,default=1000)
     date_of_birth = models.DateTimeField(default=None)
 
+
     def __str__(self):
         return self.name
 

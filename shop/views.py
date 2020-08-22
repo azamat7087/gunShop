@@ -4,9 +4,17 @@ from .models import *
 from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import *
+from matplotlib import pyplot
+import numpy as np
+from PIL import Image
+import cv2
+import datetime
+import matplotlib.pyplot as plt
+import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+from matplotlib.ticker import FuncFormatter,MaxNLocator
 
-from django.shortcuts import get_object_or_404
-# Create your views here.
 
 def gun_list(request, name):
     category = Category.objects.get(slug__iexact=name)
@@ -250,5 +258,82 @@ class News(View):
     def get(self, request):
         news = Purchase.objects.all()
         users = InfoOfUser.objects.all()
-
+        diogramm(self, users)
         return render(request, 'shop/news.html', context={'news': news, 'users': users})
+
+
+def imageOnImage(largeImg , smallImg,x_offset, y_offset ):
+    y1, y2 = y_offset, y_offset + smallImg.shape[0]
+    x1, x2 = x_offset, x_offset + smallImg.shape[1]
+
+    alpha_s =1
+    print(alpha_s)
+    alpha_l = 0
+
+    for c in range(0, 3):
+        largeImg[y1:y2, x1:x2, c] = (alpha_s * smallImg[:, :, c] + alpha_l * largeImg[y1:y2, x1:x2, c])
+
+def diogramm(self, users_info):
+    users = InfoOfUser.objects.all()
+    users_in_purchase = Purchase.objects.all()
+    users_list = []
+    purchace_list = []
+    count_list = dict()
+    count = 0
+
+    for user in users:
+        users_list.append(user.login)
+
+    for user in users_in_purchase:
+        purchace_list.append(user.login)
+
+
+    for user in users_list:
+        for p_user in purchace_list:
+            if p_user == user:
+                count += 1
+
+        count_list[user] = count
+        count = 0
+
+    users = []
+    count = []
+
+    for k, v in count_list.items():
+        users.append(k)
+        count.append(int(v))
+
+
+    fig, ax = plt.subplots()
+
+    ax.barh(users, count, align='edge',
+            color='green', ecolor='black', )
+
+    ax.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax.set_xlabel('Weapons purchased')
+
+    plt.title("Top customers")
+    plt.savefig('shop\\static\\images\\news\\Empty_pylpot.png')
+
+    images = []
+    for user in users_info:
+        images.append(user.image)
+
+    height = 700
+    width = 800
+    # create layer or void image
+    layer = np.zeros((height, width, 3))
+    background = layer[:]
+    cv2.imwrite('shop\\static\\images\\news\\res.png', background)
+    # call saved diagram
+    background = cv2.imread('shop\\static\\images\\news\\res.png')
+    img = cv2.imread('shop\\static\\images\\news\\Empty_pylpot.png')
+    reImg = cv2.resize(img, (background.shape[1], background.shape[0]))
+    imageOnImage(background, reImg, 0, 0)
+
+    for i in range(1, len(users)+1):
+        si = cv2.resize(cv2.imread('shop/{}'.format(images[-i])),(65, 45))
+        imageOnImage(background, si, 14, (110+(i-1)*85))
+    cv2.imwrite('shop\\static\\images\\news\\final.png', background)
