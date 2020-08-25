@@ -14,6 +14,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 from matplotlib.ticker import FuncFormatter,MaxNLocator
+from _thread import start_new_thread
 
 
 def gun_list(request, name):
@@ -258,7 +259,8 @@ class News(View):
     def get(self, request):
         news = Purchase.objects.all()
         users = InfoOfUser.objects.all()
-        diogramm(self, users)
+        start_new_thread(diogramm,(self, users,))
+
         return render(request, 'shop/news.html', context={'news': news, 'users': users})
 
 

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'django_summernote',
+
 ]
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 AUTHENTICATION_BACKENDS = (
