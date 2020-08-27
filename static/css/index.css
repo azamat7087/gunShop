@@ -627,7 +627,7 @@ footer {
     border: 30px solid #40c4c8;
     border-image: url("../images/cam_border.jpg")  30 round round;
     padding: 10px;
-    width: 500px;
+    width: 990px;
     margin-bottom: 20px;
 
 }
@@ -728,12 +728,9 @@ footer {
     border: black solid 2px ;
     background-color: #aaaaaa;
     border-radius: 5px;
+
 }
 
-#final {
-    border: black thin solid;
-    border-radius: 8px;
-}
 
 #card-img {
     max-width: 300px;
@@ -820,7 +817,7 @@ footer {
 
 .view-first .mask {
   opacity: 0;
-  background-color: rgba(85,96, 132, 0.44);
+  background-color: rgba(53,91,157,0.92);
   transition: all 0.4s ease-in-out;
 }
 
@@ -866,4 +863,141 @@ footer {
 
 .view-first:hover a.info {
   transition-delay: 0.2s;
+}
+
+
+
+.clip-text {
+    font-size: 6em;
+    font-weight: bold;
+    line-height: 1;
+    position: relative;
+    display: inline-block;
+    margin: .25em;
+    padding: .5em .75em;
+    text-align: center;
+    /* Color fallback */
+    color: #fff;
+    -webkit-background-clip: text;
+
+    -webkit-text-fill-color: transparent;
+}
+
+.clip-text:before,
+.clip-text:after {
+    position: absolute;
+    content: '';
+}
+
+/* Background */
+.clip-text:before {
+    z-index: -2;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-image: inherit;
+}
+
+/* Text Background (black zone) */
+.clip-text:after {
+    position: absolute;
+    z-index: -1;
+    top: .125em;
+    right: .125em;
+    bottom: .125em;
+    left: .125em;
+    background-color: #000;
+}
+
+/* Change the background position to display letter when the black zone isn't here */
+.clip-text--no-textzone:before {
+    background-position: -.75em 0;
+}
+
+.clip-text--no-textzone:after {
+    content: none;
+}
+
+/* Use Background-size cover for photo background and no-repeat background */
+.clip-text--cover,
+.clip-text--cover:before {
+    background-repeat: no-repeat;
+    -webkit-background-size: cover;
+            background-size: cover;
+  background-position: 50% 50%;
+}
+
+.clip-text_one {
+    background-image: url("../../static/images/buy_back.jpg");
+}
+
+#purchase_title {
+    width: 1160px;
+    margin-left: -120px;
+    margin-top: -30px;
+}
+
+#comments {
+    background-color: #e6e6e6;
+    width: 800px;
+    border: black solid thin;
+    padding: 30px;
+    /*background-color: white;*/
+    margin-top: 10px;
+    margin-left: -30px;
+    margin-right: -150px;
+}
+#comments h1{
+    text-align: center;
+    font-family: Georgia;
+}
+
+#comment {
+    background-color: white;
+    padding: 10px;
+    border: black dashed 2px;
+    margin-bottom: 4px;
+    margin-top: 10px;
+}
+
+#user_img_comment {
+    width: 80px;
+    height: 80px;
+    /*border: black solid thin;*/
+    border-radius: 100px;
+
+}
+
+#comment_right {
+    width: 100px;
+    text-align: center;
+    margin-left: -10px;
+    margin-bottom: -10px;
+}
+
+#comment_body {
+    font-family: "Roboto", "Lucida Grande", Verdana, Arial, sans-serif;
+    position: relative;
+    right: -120px;
+    top: -100px;
+
+}
+#comment_body  {
+    width: 450px;
+    word-wrap: break-word;
+    margin-bottom: -40px;
+}
+
+#comment_date {
+    margin-top: -80px;
+    position: relative;
+    right: -500px;
+}
+
+#comment_add {
+    position: absolute;
+    width: 60px;
+    right: -230px;
+    margin-bottom: 10px;
 }

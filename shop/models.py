@@ -13,7 +13,7 @@ class Guns(models.Model):
     date_pub = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.name
+        return self.slug
 
     class Meta:
         ordering = ['-date_pub']
@@ -36,7 +36,7 @@ class InfoOfUser(models.Model):
 
 
     def __str__(self):
-        return self.name
+        return self.login
 
 class Cart(models.Model):
     name = models.CharField(max_length=150, db_index=True)
@@ -61,6 +61,17 @@ class Purchase(models.Model):
 
     def __str__(self):
         return self.login
+
+    class Meta:
+        ordering = ['-date_of_add']
+
+
+class Comment(models.Model):
+    user = models.ForeignKey('InfoOfUser', on_delete=models.CASCADE)
+    user_img = models.ImageField(upload_to='static/images/users/', blank=True)
+    body = models.TextField(max_length=200, db_index=True)
+    date_of_add = models.DateTimeField(auto_now_add=True)
+    gun_main = models.ForeignKey('Guns', on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['-date_of_add']

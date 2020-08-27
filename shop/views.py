@@ -63,7 +63,37 @@ class GunDetail(View):
         if in_cart:
             is_already_in_cart = False
 
-        return render(request, 'shop/gun_detail.html', context={"gun": gun, 'name': name, 'already': is_already_in_cart})
+        comments = Comment.objects.filter(gun_main=gun)
+
+
+        return render(request, 'shop/gun_detail.html', context={"gun": gun, 'name': name, 'already': is_already_in_cart, 'comments': comments})
+
+
+class AddComment(View):
+    def post(self, request, name, slug, login):
+        bound_form = CommentForm(request.POST, request.FILES)
+        img = InfoOfUser.objects.get(login__iexact=login)
+        if bound_form.is_valid():
+            comment = bound_form.save(commit=False)
+            comment.user = login
+            comment.user_img = img.image
+            comment.gun_main = slug
+            comment.save()
+
+
+            return redirect('gun_detail_url', name=name , slug=slug)
+
+        return render(request, 'shop/create_comment.html',
+                      context={'form': bound_form, 'login': login, 'name': name, 'slug': slug})
+
+    def get(self, request, name, slug, login):
+        form = CommentForm()
+        return render(request, 'shop/create_comment.html', context={'form': form, 'login': login,'name': name, 'slug': slug})
+
+
+
+
+
 
 
 class UserDetail(LoginRequiredMixin, View):
@@ -197,7 +227,7 @@ class PurchaseUser(View):
             return redirect('main', permanent=True)
 
         purchase = Purchase.objects.filter(login__iexact=login)
-        paginator = Paginator(purchase, 3)
+        paginator = Paginator(purchase, 4)
 
         page_number = request.GET.get('page', 1)
         page = paginator.get_page(page_number)
@@ -260,6 +290,7 @@ class News(View):
         news = Purchase.objects.all()
         users = InfoOfUser.objects.all()
         start_new_thread(diogramm,(self, users,))
+        # diogramm(self, users)
 
         return render(request, 'shop/news.html', context={'news': news, 'users': users})
 
@@ -316,7 +347,7 @@ def diogramm(self, users_info):
     ax.xaxis.set_major_locator(ticker.MultipleLocator(1))
     ax.set_xlabel('Weapons purchased')
 
-    plt.title("Top customers")
+    plt.title("Customers")
     plt.savefig('shop\\static\\images\\news\\Empty_pylpot.png')
 
     images = []

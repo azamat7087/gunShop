@@ -26,3 +26,9 @@ class CartAdmin(admin.ModelAdmin):
     list_filter = ['name', 'user', 'gun_slug', 'date_of_add']
 
 admin.site.register(Cart, CartAdmin)
+
+class CommentAdmin(admin.ModelAdmin):
+    list_display = ['user', 'gun_main', 'date_of_add', 'body', 'user_img']
+    list_filter = ['user', 'gun_main', 'date_of_add', 'body', 'user_img']
+
+admin.site.register(Comment, CommentAdmin)

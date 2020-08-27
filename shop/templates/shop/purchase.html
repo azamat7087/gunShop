@@ -5,11 +5,17 @@
 {% endblock %}
 
 {% block content %}
-    <div id="purchase">
-    <h1>Thank you for your purchase</h1>
+    <div id="purchase_title">
+        <div class="wrapper">
+            <div class="clip-text clip-text_one">Thank you for your purchase</div>
+        </div>
+    </div>
 
+    <div id="purchase">
+    <div class="row row-cols-1 row-cols-md-2">
         {% for gun in page_object.object_list %}
-             <div class="view view-first">
+            <div class="col mb-4">
+             <div class="view view-first ">
 
 
                     <img src="../../../../../{{ gun.image }}" id="card-img" alt="...">
@@ -20,9 +26,10 @@
                     </div>
 
              </div>
+            </div>
         {% endfor %}
     </div>
-
+    </div>
 
 {% if is_paginated %}
 
@@ -55,5 +62,9 @@
                     </ul>
                 </nav>
         {% endif %}
+
+{% endblock %}
+
+{% block location %}
 
 {% endblock %}

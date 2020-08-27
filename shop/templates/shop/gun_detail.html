@@ -25,4 +25,29 @@
             </div>
         {% endif %}
     {% endif %}
+
+    {% if comments %}
+        <div id="comments">
+            <a href=""><img src="../../../static/images/add.png" id="comment_add" alt=""></a>
+            <h1>Comments</h1>
+
+            {% for comment in comments %}
+                <div id="comment">
+                    <div id="comment_right">
+                        <img src="../../../{{ comment.user_img }}" alt="" id="user_img_comment">
+                        <h5>{{ comment.user }}</h5>
+                    </div>
+
+                    <div id="comment_body">
+                        <p>{{ comment.body|safe }}</p>
+                    </div>
+
+                    <div id="comment_date">
+                        <p>{{ comment.date_of_add }}</p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
 {% endblock %}
