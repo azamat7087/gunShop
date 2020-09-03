@@ -26,11 +26,11 @@
         {% endif %}
     {% endif %}
 
-    {% if comments %}
-        <div id="comments">
-            <a href=""><img src="../../../static/images/add.png" id="comment_add" alt=""></a>
-            <h1>Comments</h1>
 
+        <div id="comments">
+            <a href="{% url 'add_comment_url' name=name slug=gun.slug login=request.user %}"><img src="../../../static/images/add.png" id="comment_add" alt=""></a>
+            <h1>Comments</h1>
+        {% if comments %}
             {% for comment in comments %}
                 <div id="comment">
                     <div id="comment_right">
@@ -48,6 +48,8 @@
                 </div>
             {% endfor %}
         </div>
+    {% else %}
+        <p>There is no comments</p>
     {% endif %}
 
 {% endblock %}

@@ -151,7 +151,7 @@ footer {
     border: black solid 1px;
     text-align: center;
     height: 70px;
-    margin-top: 20px;
+    margin-top: 40px;
     clear: left;
 }
 
@@ -1000,4 +1000,85 @@ footer {
     width: 60px;
     right: -230px;
     margin-bottom: 10px;
+}
+
+#comment_add_form {
+    width: 630px;
+    margin-left: -40px;
+    background-color: #b5bdc8;
+    text-align: center;
+    padding: 20px;
+    border: black solid 2px;
+}
+
+#comment_add_form h1 {
+    margin-bottom: 30px;
+}
+
+#comment_add_form p {
+  font-weight: bolder;
+}
+
+.scale {
+    display: inline-block; /* Строчно-блочный элемент */
+    overflow: hidden; /* Скрываем всё за контуром */
+}
+
+.scale img {
+    transition: 1s; /* Время эффекта */
+    display: block; /* Убираем небольшой отступ снизу */
+}
+
+    .scale img:hover {
+    transform: scale(1.2); /* Увеличиваем масштаб */
+}
+
+#top_sale {
+    z-index: -2;
+    position: absolute;
+    top:     670px;
+    right:   50px;
+    width:   340px;
+    height:  220px;
+    /*border:  darkgrey thin solid;*/
+    border-radius: 10px;
+    padding: 10px;
+    text-align: center;
+    background-color: #bbbbbb;
+}
+
+#top_sale h2 {
+    border-bottom: solid black 2px;
+    font-style: italic;
+}
+
+#top_sale_flex{
+    padding: 0px 20px;
+    margin-top: 10px;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+#top_sale img {
+    width: 100px;
+    border: black dotted 2px;
+    border-radius: 6px;
+}
+
+#top_sale_price {
+    font-size: 30px;
+    font-family: Impact;
+    color: green;
+}
+
+#top_sale_name {
+    font-weight: bold;
+    font-family: sans-serif;
+    font-size: 17px;
+}
+
+#top_sale_value {
+    font-size: 20px;
+    font-family: Сomic Sans MS;
 }

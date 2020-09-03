@@ -67,11 +67,11 @@ class Purchase(models.Model):
 
 
 class Comment(models.Model):
-    user = models.ForeignKey('InfoOfUser', on_delete=models.CASCADE)
+    user = models.CharField(max_length=150, db_index=True)
     user_img = models.ImageField(upload_to='static/images/users/', blank=True)
     body = models.TextField(max_length=200, db_index=True)
     date_of_add = models.DateTimeField(auto_now_add=True)
-    gun_main = models.ForeignKey('Guns', on_delete=models.CASCADE)
+    gun_main = models.CharField(max_length=150, db_index=True)
 
     class Meta:
         ordering = ['-date_of_add']

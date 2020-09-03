@@ -5,6 +5,8 @@ from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from .forms import *
 from matplotlib import pyplot
+import matplotlib
+matplotlib.use('Agg')
 import numpy as np
 from PIL import Image
 import cv2
@@ -12,6 +14,7 @@ import datetime
 import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.pyplot as plt
+
 import matplotlib.ticker as ticker
 from matplotlib.ticker import FuncFormatter,MaxNLocator
 from _thread import start_new_thread
@@ -46,8 +49,10 @@ def gun_list(request, name):
                                                            'next_url': next_url
                                                            })
 
-def main(request):
-    return render(request, 'shop/main.html')
+def main( request):
+    context = get_top_gun()
+
+    return render(request, 'shop/main.html',context=context )
 
 class GunDetail(View):
     def get(self, request, slug, name):
@@ -87,12 +92,11 @@ class AddComment(View):
                       context={'form': bound_form, 'login': login, 'name': name, 'slug': slug})
 
     def get(self, request, name, slug, login):
-        form = CommentForm()
-        return render(request, 'shop/create_comment.html', context={'form': form, 'login': login,'name': name, 'slug': slug})
-
-
-
-
+        if str(request.user) == str(login):
+            form = CommentForm()
+            return render(request, 'shop/create_comment.html', context={'form': form, 'login': login,'name': name, 'slug': slug})
+        else:
+            return redirect('main')
 
 
 
@@ -124,8 +128,8 @@ class GunBuy(LoginRequiredMixin, View):
 
 class GunInCart(LoginRequiredMixin, View):
     def get(self, request, login, gun):
-        gun = Guns.objects.get(name__contains=gun)
-        product = Cart.objects.create(name = gun.name, user=request.user, gun_slug=gun.slug, image=gun.image)
+        gun = Guns.objects.get(slug__contains=gun)
+        product = Cart.objects.create(name=gun.name, user=request.user, gun_slug=gun.slug, image=gun.image)
 
         return render(request, 'shop/gun_detail_1.html', context={'gun': gun})
 
@@ -291,9 +295,35 @@ class News(View):
         users = InfoOfUser.objects.all()
         start_new_thread(diogramm,(self, users,))
         # diogramm(self, users)
+        # context = get_top_gun(self)
 
-        return render(request, 'shop/news.html', context={'news': news, 'users': users})
+        return render(request, 'shop/news.html', context={'news': news, 'users': users,})
 
+
+def get_top_gun():
+    guns = Purchase.objects.all()
+    gun_arr = []
+    gun_dict = dict()
+    max = 0
+
+    for gun in guns:
+        gun_arr.append(gun.gun_slug)
+
+    for i in range(0, len(gun_arr)):
+        count = 0
+        for j in range(0, len(gun_arr)):
+            if gun_arr[i] == gun_arr[j]:
+                count += 1
+            gun_dict[gun_arr[i]] = count
+
+    for k, v in gun_dict.items():
+        if v > max:
+            max = v
+            key = k
+
+    top_sale = Guns.objects.get(slug__iexact=key)
+    context = {'top_sale': top_sale, 'value': max}
+    return context
 
 def imageOnImage(largeImg , smallImg,x_offset, y_offset ):
     y1, y2 = y_offset, y_offset + smallImg.shape[0]
@@ -349,6 +379,8 @@ def diogramm(self, users_info):
 
     plt.title("Customers")
     plt.savefig('shop\\static\\images\\news\\Empty_pylpot.png')
+
+    plt.close(fig)
 
     images = []
     for user in users_info:
