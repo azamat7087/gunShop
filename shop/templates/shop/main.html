@@ -30,7 +30,7 @@
           <div id="top_sale_flex">
               <div id="top_sale_left">
                   <p id="top_sale_name">{{ top_sale.name }}</p>
-                  <img src="../../{{ top_sale.image }}" alt="" >
+                  <a href="{% url 'gun_detail_url' name=top_sale.category.slug slug=top_sale.slug %}"> <img src="../../{{ top_sale.image }}" alt="" > </a>
               </div>
 
               <div id="top_sale_right">

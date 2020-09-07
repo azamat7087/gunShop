@@ -8,6 +8,18 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js" integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV" crossorigin="anonymous"></script>
     <link rel="stylesheet"  href={% static 'css/index.css' %}>
+    <script src="https://maps.api.2gis.ru/2.0/loader.js?pkg=full"></script>
+    <script type="text/javascript">
+    var map;
+
+    DG.then(function () {
+        map = DG.map('map', {
+            center: [43.2261001, 76.90377749999999],
+            zoom: 15
+        });
+        DG.marker([43.2261001, 76.90377749999999]).addTo(map);
+    });
+    </script>
     <title>
      {% block title %}
          Shop engine
@@ -60,8 +72,10 @@
 {% block location %}
     <div id="location">
         <h5>You can find us:</h5>
-        <img src="../../../../../../static/images/location.jpg" alt="sda" width="300">
+        <div id="map" style="width:300px; height:300px"></div>
+{#        <img src="../../../../../../static/images/location.jpg" alt="sda" width="300">#}
         <p><em>Address: Kazakhstan, Almaty, st.Pushkin, h.Kolotushin </em></p>
+
     </div>
 {% endblock %}
 
